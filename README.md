@@ -4,7 +4,7 @@
 
 ### Intern Details
 Name: kiran jyoti mohanty 
-Offer Letter ID:  SSG/ALML/B!/0211
+Offer Letter ID:  SSG/ALML/B1/0211
 Domain: AI & Machine Learning  
 Batch:  september batch
 Internship Duration:  150hours
