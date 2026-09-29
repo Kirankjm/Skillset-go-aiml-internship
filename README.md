@@ -21,11 +21,14 @@ LinkedIn Profile:  https://www.linkedin.com/in/kiran-jyoti-mohanty-997119274/
 | Week 1 | Data Cleaning & EDA | Completed | 
 | Week 1 | Math for ML | completed | 
 | Week 1 | Scikit-Learn Models | completed | 
+| Week 2 | Neural Network in PyTorch | Completed |
+| Week 2 | CNN Image Classifier | Completed |
+| Week 2 | Hyperparameter Experimentation | Completed |
+| Week 2 | Deep Learning Technical Report | Completed |
 
 ---
 
 ## Weekly Progress
-### Week 2 - Deep Learning with PyTorch
 ### Week 3 - TensorFlow, GenAI & Prompt Engineering
 ### Week 4 - LangChain, LangGraph & AI Agents
 
