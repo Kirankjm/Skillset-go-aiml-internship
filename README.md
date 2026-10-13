@@ -31,14 +31,15 @@ LinkedIn Profile:  https://www.linkedin.com/in/kiran-jyoti-mohanty-997119274/
 | Week 3 | Computer Vision / Text Classification Project | Completed | Working notebook + trained model file |
 | Week 3 | Prompt Engineering Portfolio | Completed | Prompt evaluation sheet with iterations and outcomes |
 | Week 3 | AI‑Assisted Coding Task | Completed | Working application + short audit notes |
+|------|------|--------|--------------|
+| Week 4 | RAG Application | Completed | Working RAG prototype + architecture notes |
+| Week 4 | Multi-Step Workflow in LangGraph | Completed | LangGraph workflow diagram + code |
+| Week 4 | LLM Observability with LangSmith | Completed | Evaluation report with trace screenshots |
+| Week 4 | CAPSTONE: AI Agent System | Completed | GitHub repo + live demo + report  |
+
+
 
 ---
-
-
----
-
-## Weekly Progress
-### Week 4 - LangChain, LangGraph & AI Agents
 
 ---
 =======
