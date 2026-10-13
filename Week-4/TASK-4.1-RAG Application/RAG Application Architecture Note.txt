@@ -1,0 +1,71 @@
+# RAG Application: Architecture Notes
+
+## 1. Overview
+A Retrieval-Augmented Generation (RAG) prototype built with LangChain. It answers
+questions from PDF documents instead of relying only on the LLM's memory. The
+knowledge base has four PDFs: the Transformer ("Attention Is All You Need"), BERT
+and RAG research papers, and a Class 6 Current Affairs document. No model was
+trained. The documents are indexed and retrieved at question time.
+
+## 2. Architecture / Pipeline
+PDFs -> Loader -> Text Splitter -> Embeddings -> Chroma Vector DB -> Retriever
+-> LLM (Groq) -> Answer (with sources)
+
+1. Load: PyPDFDirectoryLoader / PyPDFLoader read every page of each PDF.
+2. Split: RecursiveCharacterTextSplitter, chunk size 800, overlap 100.
+3. Embed: each chunk is converted to a vector with sentence-transformers/all-MiniLM-L6-v2.
+4. Store: vectors are stored in Chroma. The Current Affairs PDF was added later
+   with db.add_documents(), so the index was not rebuilt.
+5. Retrieve: the question is embedded and the top 4 most similar chunks are returned.
+6. Generate: the chunks and the question go to the LLM (openai/gpt-oss-120b on Groq).
+
+## 3. Application Modes
+I built three ways of using the same pipeline:
+
+| Mode | Function | Behaviour |
+|---|---|---|
+| Strict RAG | ask_with_sources() | Answers only from retrieved context, says "I don't know" otherwise, and shows the source PDF and page number |
+| Hybrid | ask_hybrid() | Uses the documents if they contain the answer ([From documents]), otherwise answers from general knowledge ([General knowledge]) |
+| Summarizer | summarize_pdf() | Map-reduce: summarizes batches of 5 pages, then merges the partial summaries into one final summary |
+
+Summarization does not use the retriever, because the retriever only returns 4 chunks,
+which would cover a small part of the document.
+
+## 4. Design Choices
+- Chroma: simple, local, and persistent. It also allows adding documents later.
+- MiniLM embeddings: free, fast, and run locally without an API key.
+- Chunk size 800 / overlap 100: keeps ideas together and avoids losing context at chunk edges.
+- Top-k = 4: gives enough context without making the prompt too long.
+- Groq (openai/gpt-oss-120b): free tier, fast responses. The original model
+  (llama-3.3-70b-versatile) returned a "model not found" error because Groq deprecated it,
+  so the model name was changed.
+- Prompt rule "answer only from context, else say I don't know": reduces hallucination.
+
+## 5. Testing and Results
+- Question from PDFs ("difference between RAG-Sequence and RAG-Token"): correct answer,
+  with sources from rag.pdf.
+- Question outside the PDFs ("Who is the prime minister of India?") in strict mode:
+  the app replied "I don't know".
+- Cross-document question ("Compare how BERT and the Transformer use attention"): the
+  retriever returned chunks only from bert.pdf.
+- Random general-knowledge questions (space, history, biology, science) were run
+  through the hybrid mode and answered from general knowledge.
+- Deep-understanding, quiz-style and trick questions (for example, "What does the RAG
+  paper say about cooking recipes?") were run in strict mode to check for hallucination.
+- Whole-document summary of the Current Affairs PDF was generated with the map-reduce method.
+
+## 6. Limitations
+- The retriever always returns 4 chunks, even for unrelated questions, so the sources
+  shown can be misleading (seen with the prime minister question).
+- Cross-document questions may retrieve chunks from only one PDF.
+- Hybrid mode answers from general knowledge are not verified against the documents, and
+  the model's knowledge has a cutoff date.
+- Summarization makes several LLM calls, so it is slower and can hit free-tier rate limits.
+- Scanned PDFs, tables and figures may not be read well. There is no memory between questions.
+- Page numbers in the sources start from 0.
+
+## 7. Future Improvements
+- Similarity-score threshold so irrelevant sources are hidden.
+- Larger top-k, reranking, and hybrid (keyword + vector) search for cross-document questions.
+- Chat history, plus a Gradio or Streamlit interface.
+- OCR support for scanned PDFs.
